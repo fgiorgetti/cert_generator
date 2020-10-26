@@ -11,11 +11,16 @@ fi
 # Reading private key to use
 echo "- Generating or using existing private key to produce CSR and signed Certificates"
 read_var CERT_KEY "Enter the Certificate private key file name" true ''
+read_var CERT_KEY_PASS "Enter the Certificate private key password"
 if [[ -f $CERT_KEY ]]; then
     echo Certificate private key already exists, using it.
 else
     echo Generating new private key certificate
-    openssl genrsa -out $CERT_KEY 2048
+    if [[ ${CERT_KEY_PASS} != "" ]]; then
+        openssl genrsa -aes128 -passout "pass:${CERT_KEY_PASS}" -out $CERT_KEY 3072
+    else
+        openssl genrsa -out $CERT_KEY 2048
+    fi
 fi
 echo
 

@@ -24,17 +24,21 @@ read_var() {
     while true; do
         # Write valid choices
         if [[ ${#CHOICES[@]} -gt 0 ]]; then
+            tput el
             tput cud 1
+            tput el
             echo "Valid options: [${CHOICES[@]}]"
             tput cuu 2
         fi
         
+        tput el
         echo -n "${MESSAGE}${DEFAULT_MSG}: "
         read value
         [[ -z ${value} && -n ${DEFAULT} ]] && value=${DEFAULT}
 
         # Value is empty but marked as required
         if [[ -z ${value} && ${REQUIRED} ]]; then
+            tput el
             echo "You must provide a value (press ENTER to try again)"
             read
             tput rc
@@ -51,6 +55,7 @@ read_var() {
                     break
                 fi
             done
+            tput el
             if [[ ${found} == false ]]; then
                 echo "Invalid choice (press ENTER to try again)"
                 read
@@ -61,7 +66,7 @@ read_var() {
         fi
         
         # All good
-        eval $VAR_NAME=${value}
+        eval $VAR_NAME=\"${value}\"
         break
 
     done
