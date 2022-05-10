@@ -37,7 +37,7 @@ read_var() {
         [[ -z ${value} && -n ${DEFAULT} ]] && value=${DEFAULT}
 
         # Value is empty but marked as required
-        if [[ -z ${value} && ${REQUIRED} ]]; then
+        if [[ -z "${value}" && "${REQUIRED}" = "true" ]]; then
             tput el
             echo "You must provide a value (press ENTER to try again)"
             read

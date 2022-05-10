@@ -19,8 +19,16 @@ read_var CA_PEM 'Enter CA pem file name' true 'ca.pem'
 if [[ -f $CA_PEM ]]; then
     echo CA pem file already exists, using it.
 else
+    read_var CERT_CN  "Enter the subject common name (CN) that will be used to identify CA certificate" false ''
+    EXTRA_DNS=""
+    while true; do
+        read_var DNS "Enter additional subject alternative name (or empty to ignore)" false ''
+        [[ -z "${DNS}" ]] && break
+        EXTRA_DNS+=", DNS:${DNS}"
+    done
+    
     echo Generating CA pem file...
-    openssl req -x509 -new -batch -nodes -key $CA_KEY -sha256 -days 1825 -out $CA_PEM
+    openssl req -x509 -new -batch -nodes -subj "/CN=$CERT_CN" -addext "subjectAltName = DNS:${CERT_CN}${EXTRA_DNS}" -key $CA_KEY -sha256 -days 1825 -out $CA_PEM
 fi
 echo
 

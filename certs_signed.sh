@@ -27,11 +27,18 @@ echo
 # Reading the CSR info
 read_var CERT_CSR "Enter the CSR (certificate signing request) file name for the previous key" true ''
 read_var CERT_CN  "Enter the subject common name (CN) that will be used to identify this CSR" true ''
+EXTRA_DNS=""
 if [[ -f $CERT_CSR ]]; then
     echo Certificate signing request already exists, using it.
 else
+    while true; do
+        read_var DNS "Enter additional subject alternative name (or empty to ignore)" false ''
+        [[ -z "${DNS}" ]] && break
+        EXTRA_DNS+=", DNS:${DNS}"
+    done
+
     echo Generating certificate signing request...
-    openssl req -new -batch -subj "/CN=$CERT_CN" -key $CERT_KEY -out $CERT_CSR
+    openssl req -new -batch -subj "/CN=$CERT_CN" -addext "subjectAltName = DNS:${CERT_CN}${EXTRA_DNS}" -key $CERT_KEY -out $CERT_CSR
 fi
 echo
 
@@ -43,7 +50,16 @@ while [[ $valid_cert == false ]]; do
 done
 
 echo "- Generating new public certificate using $CERT_CSR and signed by $CA_PEM with $CA_KEY"
-openssl x509 -req -in $CERT_CSR -CA $CA_PEM -CAkey $CA_KEY -CAcreateserial -out $CERT_PEM -days 1825 -sha256
+cat << EOF > cert.ext
+subjectKeyIdentifier   = hash
+authorityKeyIdentifier = keyid:always,issuer:always
+basicConstraints       = CA:TRUE
+keyUsage               = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment, keyAgreement, keyCertSign
+subjectAltName         = DNS:${CERT_CN}${EXTRA_DNS}
+issuerAltName          = issuer:copy
+EOF
+
+openssl x509 -req -in $CERT_CSR -CA $CA_PEM -CAkey $CA_KEY -CAcreateserial -out $CERT_PEM -days 1825 -sha256 -extfile cert.ext
 echo
 
 echo "- Validating generated PEM ceriticate ($CERT_PEM) using CA PEM ($CA_PEM)"

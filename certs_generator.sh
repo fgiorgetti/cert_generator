@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# Generates a CA and optionally a signed ceritifcate
-# If you need extra signed certificates, simply execute certs_signed.sh
-
 . `dirname $0`/read_var.sh
 . `dirname $0`/certs_ca.sh
 
