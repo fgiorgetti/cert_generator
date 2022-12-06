@@ -17,9 +17,9 @@ if [[ -f $CERT_KEY ]]; then
 else
     echo Generating new private key certificate
     if [[ ${CERT_KEY_PASS} != "" ]]; then
-        openssl genrsa -aes128 -passout "pass:${CERT_KEY_PASS}" -out $CERT_KEY 3072
+        openssl genrsa -aes128 -traditional -passout "pass:${CERT_KEY_PASS}" -out $CERT_KEY 3072
     else
-        openssl genrsa -out $CERT_KEY 2048
+        openssl genrsa -traditional -out $CERT_KEY 2048
     fi
 fi
 echo

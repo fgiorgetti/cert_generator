@@ -9,7 +9,7 @@ if [[ -f $CA_KEY ]]; then
     echo CA key file already exists, using it.
 else
     echo Generating CA key file...
-    openssl genrsa -out $CA_KEY 2048
+    openssl genrsa -traditional -out $CA_KEY 2048
 fi
 echo
 
