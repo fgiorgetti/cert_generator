@@ -26,6 +26,12 @@ else
         [[ -z "${DNS}" ]] && break
         EXTRA_DNS+=", DNS:${DNS}"
     done
+    while true; do
+        read_var IP "Enter additional IP addresses (or empty to ignore)" false ''
+        [[ -z "${IP}" ]] && break
+        EXTRA_DNS+=", IP:${IP}"
+    done
+
     
     echo Generating CA pem file...
     openssl req -x509 -new -batch -nodes -subj "/CN=$CERT_CN" -addext "subjectAltName = DNS:${CERT_CN}${EXTRA_DNS}" -key $CA_KEY -sha256 -days 1825 -out $CA_PEM
