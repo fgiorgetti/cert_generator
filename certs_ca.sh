@@ -15,7 +15,7 @@ echo
 
 # Create or use existing CA PEM file
 echo "- Next we need a public X509 certificate from your CA key file"
-read_var CA_PEM 'Enter CA pem file name' true 'ca.pem'
+read_var CA_PEM 'Enter CA pem file name' true 'ca.crt'
 if [[ -f $CA_PEM ]]; then
     echo CA pem file already exists, using it.
 else
