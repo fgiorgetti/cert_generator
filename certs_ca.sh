@@ -32,9 +32,15 @@ else
         EXTRA_DNS+=", IP:${IP}"
     done
 
-    
     echo Generating CA pem file...
-    openssl req -x509 -new -batch -nodes -subj "/CN=$CERT_CN" -addext "subjectAltName = DNS:${CERT_CN}${EXTRA_DNS}" -key $CA_KEY -sha256 -days 1825 -out $CA_PEM
+    #set -x
+    #-addext "authorityKeyIdentifier = none" \
+    openssl req -x509 -new -batch -nodes -subj "/CN=$CERT_CN" \
+    -addext "subjectAltName = DNS:${CERT_CN}${EXTRA_DNS}" \
+    -addext "keyUsage = critical, digitalSignature, keyEncipherment, keyCertSign" \
+    -addext "extendedKeyUsage = serverAuth, clientAuth" \
+    -key $CA_KEY -sha256 -days 1825 -out $CA_PEM
+    #set +x
 fi
 echo
 

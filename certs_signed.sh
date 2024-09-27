@@ -10,7 +10,7 @@ fi
 
 # Reading private key to use
 echo "- Generating or using existing private key to produce CSR and signed Certificates"
-read_var CERT_KEY "Enter the Certificate private key file name" true ''
+read_var CERT_KEY "Enter the Certificate private key file name" true "${1//.*/.key}"
 read_var CERT_KEY_PASS "Enter the Certificate private key password"
 if [[ -f $CERT_KEY ]]; then
     echo Certificate private key already exists, using it.
@@ -25,8 +25,8 @@ fi
 echo
 
 # Reading the CSR info
-read_var CERT_CSR "Enter the CSR (certificate signing request) file name for the previous key" true ''
-read_var CERT_CN  "Enter the subject common name (CN) that will be used to identify this CSR" true ''
+read_var CERT_CSR "Enter the CSR (certificate signing request) file name for the previous key" true "${1/.*/.csr}"
+read_var CERT_CN  "Enter the subject common name (CN) that will be used to identify this CSR" true ""
 EXTRA_DNS=""
 if [[ -f $CERT_CSR ]]; then
     echo Certificate signing request already exists, using it.
@@ -51,7 +51,7 @@ echo
 # Creating a signed ceritifcate based on CSR for the related Cert Key
 valid_cert=false
 while [[ $valid_cert == false ]]; do
-    read_var CERT_PEM "Enter the signed certificate pem file name" true ''
+    read_var CERT_PEM "Enter the signed certificate pem file name" true "${1/.*/.crt}"
     [[ -f $CERT_PEM ]] && echo "Public certificate already exists (press ENTER to try again)." || valid_cert=true
 done
 
