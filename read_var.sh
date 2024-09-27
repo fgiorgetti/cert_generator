@@ -9,14 +9,13 @@ read_var() {
     
     # If a set of choices has been provided
     if [[ -n $1 ]]; then
-        CHOICES=( $* )
+        read -r -a CHOICES < <(echo "$*")
     else
         CHOICES=()
     fi
 
     # Preparing default message
     DEFAULT_MSG=" [${DEFAULT}]"
-    [[ -n ${DEFAULT} ]] && HAS_DEFAULT=true || HAS_DEFAULT=false
 
     # Save cursor and clear rest of screen
     tput sc
@@ -27,20 +26,20 @@ read_var() {
             tput el
             tput cud 1
             tput el
-            echo "Valid options: [${CHOICES[@]}]"
+            printf "Valid options: [%s]\n" "${CHOICES[@]}"
             tput cuu 2
         fi
         
         tput el
         echo -n "${MESSAGE}${DEFAULT_MSG}: "
-        read value
+        read -r value
         [[ -z ${value} && -n ${DEFAULT} ]] && value=${DEFAULT}
 
         # Value is empty but marked as required
         if [[ -z "${value}" && "${REQUIRED}" = "true" ]]; then
             tput el
             echo "You must provide a value (press ENTER to try again)"
-            read
+            read -r
             tput rc
             tput ed
             continue
@@ -49,8 +48,8 @@ read_var() {
         # If choices provided, validate
         if [[ ${#CHOICES[@]} -gt 0 ]]; then
             found=false
-            for choice in ${CHOICES[@]}; do
-                if [[ ${choice} == ${value} ]]; then
+            for choice in "${CHOICES[@]}"; do
+                if [[ "${choice}" == "${value}" ]]; then
                     found=true
                     break
                 fi
@@ -58,7 +57,7 @@ read_var() {
             tput el
             if [[ ${found} == false ]]; then
                 echo "Invalid choice (press ENTER to try again)"
-                read
+                read -r
                 tput rc
                 tput ed
                 continue
@@ -66,7 +65,7 @@ read_var() {
         fi
         
         # All good
-        eval $VAR_NAME=\"${value}\"
+        eval "$VAR_NAME=\"${value}\""
         break
 
     done

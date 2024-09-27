@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. `dirname $0`/read_var.sh
+. "$(dirname "$0")"/read_var.sh
 
 # Create or use existing CA KEY
 echo "- First we need to create a CA key file - The private key for your Certificate Authority"
@@ -9,7 +9,7 @@ if [[ -f $CA_KEY ]]; then
     echo CA key file already exists, using it.
 else
     echo Generating CA key file...
-    openssl genrsa -traditional -out $CA_KEY 2048
+    openssl genrsa -traditional -out "$CA_KEY" 2048
 fi
 echo
 
@@ -39,7 +39,7 @@ else
     -addext "subjectAltName = DNS:${CERT_CN}${EXTRA_DNS}" \
     -addext "keyUsage = critical, digitalSignature, keyEncipherment, keyCertSign" \
     -addext "extendedKeyUsage = serverAuth, clientAuth" \
-    -key $CA_KEY -sha256 -days 1825 -out $CA_PEM
+    -key "$CA_KEY" -sha256 -days 1825 -out "$CA_PEM"
     #set +x
 fi
 echo
